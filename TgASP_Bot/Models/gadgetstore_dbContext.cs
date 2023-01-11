@@ -16,27 +16,45 @@ namespace TgASP_Bot.Models
         {
         }
 
+        public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Gadget> Gadgets { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-3H1AEF60\\SQLEXPRESS;Initial Catalog=gadgetstore_db;Integrated security=True;Encrypt=False");
+                optionsBuilder.UseSqlServer("Server=LAPTOP-3H1AEF60\\SQLEXPRESS;Database=gadgetstore_db;Trusted_Connection=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Gadget>(entity =>
+            modelBuilder.Entity<Category>(entity =>
             {
-                entity.ToTable("Gadget");
+                entity.ToTable("Category");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.NameGadgets)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("NAME_GADGETS");
+            });
+
+            modelBuilder.Entity<Gadget>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.IdCategory).HasColumnName("ID_Category");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(25)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.IdCategoryNavigation)
+                    .WithMany(p => p.Gadgets)
+                    .HasForeignKey(d => d.IdCategory)
+                    .HasConstraintName("FK__Gadgets__ID_Cate__72C60C4A");
             });
 
             OnModelCreatingPartial(modelBuilder);

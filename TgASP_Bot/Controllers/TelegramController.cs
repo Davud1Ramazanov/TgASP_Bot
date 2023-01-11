@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Requests;
+using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
 using TgASP_Bot.Models;
 
@@ -11,6 +12,7 @@ namespace TgASP_Bot.Controllers
     public class TelegramController : ControllerBase
     {
         private static gadgetstore_dbContext gadgetstore_DbContext = new gadgetstore_dbContext();
+        private static Category category = new Category();
 
         [HttpPost]
         public async Task<IResult> Post([FromBody] Update update)
@@ -33,7 +35,7 @@ namespace TgASP_Bot.Controllers
             {
                 if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
                 {
-                    if (update.Message.Text == "/start")
+                    if (update.Message.Text == "/dice")
                     {
                         await client.SendDiceAsync(update.Message.From.Id);
                     }
@@ -45,7 +47,7 @@ namespace TgASP_Bot.Controllers
             {
                 if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
                 {
-                    if (update.Message.Text == "Picture")
+                    if (update.Message.Text == "/picture")
                     {
                         await client.SendPhotoAsync(update.Message.From.Id, photo: "https://upload.wikimedia.org/wikipedia/commons/4/42/Blue_sky%2C_white-gray_clouds.JPG");
                     }
@@ -56,7 +58,8 @@ namespace TgASP_Bot.Controllers
             {
                 if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
                 {
-                    if (update.Message.Text == "Gadgets")
+                    var command1 = "/product 1".ToString().Split(" ");
+                    if (update.Message.Text == $"{command1}" && category.Id == command1.Length)
                     {
                         foreach (var item in gadgetstore_DbContext.Gadgets)
                         {
@@ -70,3 +73,6 @@ namespace TgASP_Bot.Controllers
         }
     }
 }
+
+
+//var header = Request.Headers["forecast"].ToString().Split(",");
