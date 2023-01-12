@@ -12,7 +12,6 @@ namespace TgASP_Bot.Controllers
     public class TelegramController : ControllerBase
     {
         private static gadgetstore_dbContext gadgetstore_DbContext = new gadgetstore_dbContext();
-        private static Category category = new Category();
 
         [HttpPost]
         public async Task<IResult> Post([FromBody] Update update)
@@ -25,54 +24,26 @@ namespace TgASP_Bot.Controllers
                 {
                     if (update.Message.Text == "/start")
                     {
-                        await client.SendTextMessageAsync(update.Message.From.Id, $"Hello @{update.Message.From.Username}");
+                        await client.SendTextMessageAsync(update.Message.From.Id, $"Hello, @{update.Message.From.Username}");
                     }
-                }
-            }
-
-
-            if (update != null)
-            {
-                if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
-                {
                     if (update.Message.Text == "/dice")
                     {
                         await client.SendDiceAsync(update.Message.From.Id);
                     }
-                }
-            }
-
-
-            if (update != null)
-            {
-                if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
-                {
                     if (update.Message.Text == "/picture")
                     {
                         await client.SendPhotoAsync(update.Message.From.Id, photo: "https://upload.wikimedia.org/wikipedia/commons/4/42/Blue_sky%2C_white-gray_clouds.JPG");
                     }
-                }
-            }
-
-            if (update != null)
-            {
-                if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
-                {
-                    var command1 = "/product 1".ToString().Split(" ");
-                    if (update.Message.Text == $"{command1}" && category.Id == command1.Length)
+                    if (update.Message.Text.Contains("/gadgets"))
                     {
-                        foreach (var item in gadgetstore_DbContext.Gadgets)
-                        {
-                            await client.SendTextMessageAsync(update.Message.From.Id, $"{item.Name}");
-                        }
+                        var cmd1 = update.Message.Text.Split(" ");
+                        var gadgets = gadgetstore_DbContext.Gadgets;
+                        var cmd2 = gadgets.Where(x => x.Id.ToString().Equals(cmd1[1])).FirstOrDefault();
+                        await client.SendTextMessageAsync(update.Message.From.Id, cmd2.Name);
                     }
                 }
             }
-
             return Results.Ok();
         }
     }
 }
-
-
-//var header = Request.Headers["forecast"].ToString().Split(",");
