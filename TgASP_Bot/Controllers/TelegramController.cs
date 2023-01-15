@@ -34,7 +34,7 @@ namespace TgASP_Bot.Controllers
                     {
                         await client.SendPhotoAsync(update.Message.From.Id, photo: "https://upload.wikimedia.org/wikipedia/commons/4/42/Blue_sky%2C_white-gray_clouds.JPG");
                     }
-                    if (update.Message.Text.Contains("/gadgets"))
+
                     {
                         var cmd1 = update.Message.Text.Split(" ");
                         var gadgets = gadgetstore_DbContext.Gadgets;
